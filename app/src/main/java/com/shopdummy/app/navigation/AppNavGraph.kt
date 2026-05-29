@@ -8,11 +8,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.shopdummy.app.ui.MainScreen
 import com.shopdummy.app.ui.auth.LoginScreen
-import com.shopdummy.app.ui.cart.CartScreen
 import com.shopdummy.app.ui.products.ProductDetailScreen
-import com.shopdummy.app.ui.products.ProductListScreen
-import com.shopdummy.app.ui.settings.SettingsScreen
 import com.shopdummy.app.utils.AppViewModelFactory
 
 @Composable
@@ -23,31 +21,22 @@ fun AppNavGraph(
     val context = LocalContext.current
     val viewModelFactory = AppViewModelFactory(context)
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    // Si el destino inicial era products, cart o settings, ahora debe ser main
+    val actualStartDestination = if (startDestination in listOf("products", "cart", "settings")) "main" else startDestination
+
+    NavHost(navController = navController, startDestination = actualStartDestination) {
         composable("login") {
             LoginScreen(
                 viewModel = viewModel(factory = viewModelFactory),
                 onLoginSuccess = {
-                    navController.navigate("products") {
+                    navController.navigate("main") {
                         popUpTo("login") { inclusive = true }
                     }
                 }
             )
         }
-        composable("products") {
-            ProductListScreen(
-                productViewModel = viewModel(factory = viewModelFactory),
-                cartViewModel = viewModel(factory = viewModelFactory),
-                onNavigateToDetail = { productId ->
-                    navController.navigate("detail/$productId")
-                },
-                onNavigateToCart = {
-                    navController.navigate("cart")
-                },
-                onNavigateToSettings = {
-                    navController.navigate("settings")
-                }
-            )
+        composable("main") {
+            MainScreen(parentNavController = navController)
         }
         composable(
             route = "detail/{productId}",
@@ -58,24 +47,6 @@ fun AppNavGraph(
                 productId = productId,
                 productViewModel = viewModel(factory = viewModelFactory),
                 cartViewModel = viewModel(factory = viewModelFactory),
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-        composable("cart") {
-            CartScreen(
-                viewModel = viewModel(factory = viewModelFactory),
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-        composable("settings") {
-            SettingsScreen(
-                settingsViewModel = viewModel(factory = viewModelFactory),
-                authViewModel = viewModel(factory = viewModelFactory),
-                onNavigateToLogin = {
-                    navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -2,6 +2,7 @@ package com.shopdummy.app.data.local.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import kotlinx.coroutines.channels.awaitClose
 
 class PreferencesManager(context: Context) {
 
@@ -36,8 +37,21 @@ class PreferencesManager(context: Context) {
     }
 
     fun isDarkTheme(): Boolean {
-        // Por defecto false, o se puede cambiar a true
         return prefs.getBoolean(KEY_THEME_DARK, false)
+    }
+
+    val themeFlow: kotlinx.coroutines.flow.Flow<Boolean> = kotlinx.coroutines.flow.callbackFlow {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            if (key == KEY_THEME_DARK) {
+                trySend(sharedPreferences.getBoolean(KEY_THEME_DARK, false))
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        // Emit initial value
+        trySend(isDarkTheme())
+        awaitClose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
+        }
     }
 
     fun clearSession() {

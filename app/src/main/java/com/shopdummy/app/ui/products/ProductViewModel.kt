@@ -69,6 +69,12 @@ class ProductViewModel(
         _searchQuery.value = query
         if (query.isBlank()) {
             _searchResults.value = emptyList()
+        } else {
+            // Filtrado local instantáneo para mejor UX
+            val lowerQuery = query.lowercase()
+            _searchResults.value = localProducts.value.filter {
+                it.title.lowercase().contains(lowerQuery) || it.category.lowercase().contains(lowerQuery)
+            }
         }
     }
 }

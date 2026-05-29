@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
 import com.shopdummy.app.data.local.prefs.PreferencesManager
 import com.shopdummy.app.navigation.AppNavGraph
@@ -27,7 +29,7 @@ class MainActivity : ComponentActivity() {
         val initialRoute = if (prefsManager.getToken() != null) "products" else "login"
 
         setContent {
-            val isDarkTheme = prefsManager.isDarkTheme()
+            val isDarkTheme by prefsManager.themeFlow.collectAsState(initial = prefsManager.isDarkTheme())
             
             ShopDummyTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()

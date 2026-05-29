@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.shopdummy.app.ui.auth.AuthViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,6 +23,9 @@ fun SettingsScreen(
     val isDarkTheme by settingsViewModel.isDarkTheme.collectAsState()
     val username = settingsViewModel.getUsername()
     val userId = settingsViewModel.getUserId()
+    
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -33,7 +37,8 @@ fun SettingsScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -76,7 +81,12 @@ fun SettingsScreen(
             Text("Caché", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
-                onClick = { settingsViewModel.clearProductCache() },
+                onClick = { 
+                    settingsViewModel.clearProductCache() 
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Caché de productos limpiada")
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Limpiar productos guardados")
