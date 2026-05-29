@@ -26,6 +26,26 @@ fun CartScreen(
 ) {
     val cartItems by viewModel.cartItems.collectAsState()
     val totalPrice by viewModel.totalPrice.collectAsState()
+    var showCheckoutDialog by remember { mutableStateOf(false) }
+
+    if (showCheckoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showCheckoutDialog = false },
+            title = { Text("¡Pedido confirmado!") },
+            text = {
+                Text("Tu pedido por $${String.format("%.2f", totalPrice)} ha sido realizado con éxito. En un entorno real, aquí se procesaría el pago.")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.clearCart()
+                    showCheckoutDialog = false
+                    onNavigateBack()
+                }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -57,7 +77,7 @@ fun CartScreen(
                             TextButton(onClick = { viewModel.clearCart() }) {
                                 Text("Vaciar carrito")
                             }
-                            Button(onClick = { /* TODO Checkout */ }) {
+                            Button(onClick = { showCheckoutDialog = true }) {
                                 Text("Comprar")
                             }
                         }
