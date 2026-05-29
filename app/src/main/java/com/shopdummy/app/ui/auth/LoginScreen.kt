@@ -1,9 +1,7 @@
 package com.shopdummy.app.ui.auth
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -57,9 +55,9 @@ fun LoginScreen(
             label = { Text("Password") },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-                val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
+                val text = if (passwordVisible) "Ocultar" else "Mostrar"
+                TextButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Text(text)
                 }
             },
             modifier = Modifier.fillMaxWidth()

@@ -1,8 +1,5 @@
 package com.shopdummy.app.data.remote.dto
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
 data class ProductDto(
     val id: Int,
     val title: String,
@@ -17,7 +14,6 @@ data class ProductDto(
     val images: List<String>?
 )
 
-@JsonClass(generateAdapter = true)
 data class ProductListResponse(
     val products: List<ProductDto>,
     val total: Int,

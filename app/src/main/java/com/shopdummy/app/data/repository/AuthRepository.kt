@@ -18,7 +18,7 @@ class AuthRepository(
                 val response = api.login(request)
                 
                 // Guardar sesión localmente
-                prefs.saveToken(response.token)
+                prefs.saveToken(response.accessToken)
                 prefs.saveUserId(response.id)
                 prefs.saveUsername(response.username)
                 
@@ -31,7 +31,7 @@ class AuthRepository(
                     lastName = response.lastName,
                     gender = response.gender,
                     image = response.image,
-                    token = response.token
+                    token = response.accessToken
                 )
                 
                 Result.success(user)
