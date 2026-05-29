@@ -84,7 +84,8 @@ fun CartScreen(
                     }
                 }
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0.dp)
     ) { padding ->
         if (cartItems.isEmpty()) {
             Column(

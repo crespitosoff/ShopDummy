@@ -33,20 +33,10 @@ class MainActivity : ComponentActivity() {
             
             ShopDummyTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Agregamos un Modifier.padding a una caja o contenedor principal 
-                    // dentro de AppNavGraph si fuese necesario, 
-                    // o le pasamos el innerPadding al nav graph, pero para simplificar
-                    // y dado que Jetpack Compose maneja los insets bien, 
-                    // podríamos dejar que cada pantalla lo maneje o no usar Scaffold aquí.
-                    // Para ajustarnos a las recomendaciones:
-                    androidx.compose.foundation.layout.Box(modifier = Modifier.padding(innerPadding)) {
-                        AppNavGraph(
-                            navController = navController,
-                            startDestination = initialRoute
-                        )
-                    }
-                }
+                AppNavGraph(
+                    navController = navController,
+                    startDestination = initialRoute
+                )
             }
         }
     }
