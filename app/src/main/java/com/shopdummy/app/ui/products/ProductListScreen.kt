@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Search
@@ -35,50 +36,97 @@ fun ProductListScreen(
 ) {
     val products by productViewModel.products.collectAsState()
     val searchQuery by productViewModel.searchQuery.collectAsState()
+    val sortOption by productViewModel.sortOption.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            // Search Bar Area
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.background,
+                tonalElevation = 0.dp
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { productViewModel.onSearchQueryChange(it) },
                         placeholder = { Text("Buscar productos...") },
                         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 8.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = RoundedCornerShape(24.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     )
-                }
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { padding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = padding,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(products) { product ->
-                ProductCard(
-                    product = product,
-                    onClick = { onNavigateToDetail(product.id) },
-                    onAddToCart = {
-                        cartViewModel.addToCart(product)
-                        NotificationHelper.sendCartNotification(context, product.title)
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar("Agregado al carrito: ${product.title}")
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Chips de filtrado/ordenamiento
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        item {
+                            FilterChip(
+                                selected = sortOption == SortOption.DEFAULT,
+                                onClick = { productViewModel.updateSortOption(SortOption.DEFAULT) },
+                                label = { Text("Relevancia") }
+                            )
+                        }
+                        item {
+                            FilterChip(
+                                selected = sortOption == SortOption.PRICE_ASC,
+                                onClick = { productViewModel.updateSortOption(SortOption.PRICE_ASC) },
+                                label = { Text("Menor Precio") }
+                            )
+                        }
+                        item {
+                            FilterChip(
+                                selected = sortOption == SortOption.PRICE_DESC,
+                                onClick = { productViewModel.updateSortOption(SortOption.PRICE_DESC) },
+                                label = { Text("Mayor Precio") }
+                            )
+                        }
+                        item {
+                            FilterChip(
+                                selected = sortOption == SortOption.RATING_DESC,
+                                onClick = { productViewModel.updateSortOption(SortOption.RATING_DESC) },
+                                label = { Text("Mejor Valorados") }
+                            )
                         }
                     }
-                )
+                }
+            }
+
+            // Products Grid
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(products) { product ->
+                    ProductCard(
+                        product = product,
+                        onClick = { onNavigateToDetail(product.id) },
+                        onAddToCart = {
+                            cartViewModel.addToCart(product)
+                            NotificationHelper.sendCartNotification(context, product.title)
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar("Agregado al carrito: ${product.title}")
+                            }
+                        }
+                    )
+                }
             }
         }
     }
