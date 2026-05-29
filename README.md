@@ -159,16 +159,38 @@ git clone https://github.com/tu-usuario/ShopDummy.git
 
 ---
 
-## 📡 API - DummyJSON
+## 📡 API - DummyJSON (Consumo con Postman)
 
-| Endpoint | Método | Descripción |
-|----------|--------|-------------|
-| `/auth/login` | POST | Login, retorna `accessToken` JWT |
-| `/products` | GET | Lista de productos paginada |
-| `/products/{id}` | GET | Detalle de un producto |
-| `/products/search?q=` | GET | Búsqueda de productos |
+La aplicación usa la API de [DummyJSON](https://dummyjson.com). Si necesitas sustentar cómo fue consumida la API, aquí te explico cómo replicar las consultas usando **Postman**:
 
-La app usa el `accessToken` JWT para identificar la sesión del usuario localmente (guardado en SharedPreferences). Para endpoints de productos no se requiere autenticación.
+### 1. Login de Usuario (`POST`)
+- **URL**: `https://dummyjson.com/auth/login`
+- **Método**: `POST`
+- **Headers**:
+  - `Content-Type: application/json`
+- **Body** (selecciona `raw` y formato `JSON`):
+  ```json
+  {
+    "username": "emilys",
+    "password": "emilyspass",
+    "expiresInMins": 60
+  }
+  ```
+- **Respuesta**: Recibirás un JSON con los datos del usuario y un `accessToken` (JWT) que la app guarda internamente.
+
+### 2. Obtener Catálogo de Productos (`GET`)
+- **URL**: `https://dummyjson.com/products`
+- **Método**: `GET`
+- **Params** (opcionales): `limit=30` (para paginar)
+- **Respuesta**: Un objeto JSON que contiene un arreglo `products` con la lista completa.
+
+### 3. Buscar Productos (`GET`)
+- **URL**: `https://dummyjson.com/products/search`
+- **Método**: `GET`
+- **Params**: `q=laptop` (o cualquier palabra clave a buscar en el título)
+- **Respuesta**: El arreglo `products` filtrado por la API.
+
+La app usa Retrofit internamente para realizar exactamente estas mismas peticiones HTTP y luego Moshi convierte las respuestas JSON en objetos Kotlin para mostrarlos en la UI.
 
 ---
 
